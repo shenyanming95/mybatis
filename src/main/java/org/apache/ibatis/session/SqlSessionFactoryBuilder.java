@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 
 /**
- * Builds {@link SqlSession} instances.
+ * 使用{@link SqlSessionFactoryBuilder}读取sqlMapConfig.xml, 获取到
+ * 一个{@link SqlSessionFactory}对象, 用它来管理{@link SqlSession},
+ * 可以说, 这是整个框架运行的起点.
  *
  * @author Clinton Begin
  */
@@ -88,7 +90,12 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  /**
+   * 最终都是通过将配置文件解析成{@link Configuration}, 然后创建返回一个{@link DefaultSqlSessionFactory}
+   */
   public SqlSessionFactory build(Configuration config) {
+    // 参数config就是解析xml获取到的对象, 通过它来实例化DefaultSqlSessionFactory,
+    // 这步执行完, 我们就可以获取到一个SqlSessionFactory实例
     return new DefaultSqlSessionFactory(config);
   }
 

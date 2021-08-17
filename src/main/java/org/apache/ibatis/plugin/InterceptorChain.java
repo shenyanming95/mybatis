@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,12 +20,20 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 拦截器链
+ *
  * @author Clinton Begin
  */
 public class InterceptorChain {
 
+  /**
+   * 插件集合
+   */
   private final List<Interceptor> interceptors = new ArrayList<>();
 
+  /**
+   * 用所有的{@link Interceptor}包装目标对象 target
+   */
   public Object pluginAll(Object target) {
     for (Interceptor interceptor : interceptors) {
       target = interceptor.plugin(target);
@@ -33,10 +41,16 @@ public class InterceptorChain {
     return target;
   }
 
+  /**
+   * 添加拦截器
+   */
   public void addInterceptor(Interceptor interceptor) {
     interceptors.add(interceptor);
   }
 
+  /**
+   * 获取所有拦截器
+   */
   public List<Interceptor> getInterceptors() {
     return Collections.unmodifiableList(interceptors);
   }

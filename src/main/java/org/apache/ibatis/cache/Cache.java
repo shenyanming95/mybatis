@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,21 +42,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface Cache {
 
   /**
-   * @return The identifier of this cache
+   * @return 缓存的唯一标识
    */
   String getId();
 
   /**
-   * @param key
-   *          Can be any object but usually it is a {@link CacheKey}
-   * @param value
-   *          The result of a select.
+   * @param key Can be any object but usually it is a {@link CacheKey}
+   * @param value The result of a select.
    */
   void putObject(Object key, Object value);
 
   /**
-   * @param key
-   *          The key
+   * @param key The key
    * @return The object stored in the cache.
    */
   Object getObject(Object key);
@@ -72,8 +69,7 @@ public interface Cache {
    * available instead of hitting the database.
    *
    *
-   * @param key
-   *          The key
+   * @param key The key
    * @return Not used
    */
   Object removeObject(Object key);

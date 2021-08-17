@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -238,7 +238,8 @@ public class ScriptRunner {
   }
 
   private void executeStatement(String command) throws SQLException {
-    try (Statement statement = connection.createStatement()) {
+    Statement statement = connection.createStatement();
+    try {
       statement.setEscapeProcessing(escapeProcessing);
       String sql = command;
       if (removeCRs) {
@@ -260,6 +261,13 @@ public class ScriptRunner {
           String message = "Error executing: " + command + ".  Cause: " + e;
           printlnError(message);
         }
+      }
+    } finally {
+      try {
+        statement.close();
+      } catch (Exception ignored) {
+        // Ignore to workaround a bug in some connection pools
+        // (Does anyone know the details of the bug?)
       }
     }
   }

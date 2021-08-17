@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,23 +21,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * 每当MyBatis在PreparedStatement上设置参数或从ResultSet检索值时,
+ * 都会使用TypeHandler以适合Java类型的方式检索值
+ *
  * @author Clinton Begin
  */
 public interface TypeHandler<T> {
 
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
-  /**
-   * Gets the result.
-   *
-   * @param rs
-   *          the rs
-   * @param columnName
-   *          Column name, when configuration <code>useColumnLabel</code> is <code>false</code>
-   * @return the result
-   * @throws SQLException
-   *           the SQL exception
-   */
   T getResult(ResultSet rs, String columnName) throws SQLException;
 
   T getResult(ResultSet rs, int columnIndex) throws SQLException;

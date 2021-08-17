@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,14 +23,17 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.Configuration;
 
+/**
+ * @author Frank D. Martinez [mnesarco]
+ */
 public interface LanguageDriver {
 
   /**
-   * Creates a {@link ParameterHandler} that passes the actual parameters to the the JDBC statement.
+   * 创建一个{@link ParameterHandler}，将实际参数传递给JDBC statement
    *
-   * @author Frank D. Martinez [mnesarco]
-   * @param mappedStatement The mapped statement that is being executed
-   * @param parameterObject The input parameter object (can be null)
+   *
+   * @param mappedStatement 准备执行的mapped statement
+   * @param parameterObject 输入参数对象
    * @param boundSql The resulting SQL once the dynamic language has been executed.
    * @return the parameter handler
    * @see DefaultParameterHandler

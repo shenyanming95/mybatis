@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2015 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,8 +16,19 @@
 package org.apache.ibatis.session;
 
 /**
+ * 缓存级别
+ *
  * @author Eduardo Macarron
  */
 public enum LocalCacheScope {
-  SESSION,STATEMENT
+
+  /**
+   * MyBatis一级缓存, SqlSession级别
+   */
+  SESSION,
+
+  /**
+   * MyBatis二级缓存, MappedStatement级别
+   */
+  STATEMENT
 }

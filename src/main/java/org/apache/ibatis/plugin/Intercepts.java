@@ -1,5 +1,5 @@
-/*
- *    Copyright 2009-2021 the original author or authors.
+/**
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,24 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation that specify target methods to intercept.
+ * 指定要拦截的目标方法
  *
- * <b>How to use:</b>
- * <pre>
- * &#064;Intercepts({&#064;Signature(
- *   type= Executor.class,
- *   method = "update",
- *   args = {MappedStatement.class ,Object.class})})
- * public class ExamplePlugin implements Interceptor {
- *   &#064;Override
- *   public Object intercept(Invocation invocation) throws Throwable {
- *     // implement pre-processing if needed
- *     Object returnObject = invocation.proceed();
- *     // implement post-processing if needed
- *     return returnObject;
- *   }
- * }
- * </pre>
  * @author Clinton Begin
  */
 @Documented
