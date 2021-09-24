@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,11 +33,7 @@ import org.apache.ibatis.reflection.MetaClass;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.session.AutoMappingBehavior;
-import org.apache.ibatis.session.AutoMappingUnknownColumnBehavior;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.LocalCacheScope;
+import org.apache.ibatis.session.*;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
@@ -54,10 +50,10 @@ import java.util.Properties;
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
-    private boolean parsed;
     private final XPathParser parser;
-    private String environment;
     private final ReflectorFactory localReflectorFactory = new DefaultReflectorFactory();
+    private boolean parsed;
+    private String environment;
 
     public XMLConfigBuilder(Reader reader) {
         this(reader, null, null);

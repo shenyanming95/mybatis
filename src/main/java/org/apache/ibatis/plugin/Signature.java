@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
  * 表示方法签名, 用来定义对一个类的哪些方法进行拦截,
  * 一般配合{@link Intercepts}来使用.
  *
- * @see Intercepts
  * @author Clinton Begin
+ * @see Intercepts
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

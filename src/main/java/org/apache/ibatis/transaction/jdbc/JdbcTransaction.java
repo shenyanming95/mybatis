@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,6 @@ import java.sql.SQLException;
  * 基于JDBC封装的事务
  *
  * @author Clinton Begin
- *
  * @see JdbcTransactionFactory
  */
 public class JdbcTransaction implements Transaction {
@@ -41,19 +40,19 @@ public class JdbcTransaction implements Transaction {
     protected TransactionIsolationLevel level;
     protected boolean autoCommit;
 
-  /**
-   * 有两种方式创建事务, 一是给数据源, 然后根据配置来创建{@link Connection}
-   */
+    /**
+     * 有两种方式创建事务, 一是给数据源, 然后根据配置来创建{@link Connection}
+     */
     public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
         dataSource = ds;
         level = desiredLevel;
         autoCommit = desiredAutoCommit;
     }
 
-  /**
-   * 有两种方式创建事务, 一是直接给一个JDBC连接
-   */
-  public JdbcTransaction(Connection connection) {
+    /**
+     * 有两种方式创建事务, 一是直接给一个JDBC连接
+     */
+    public JdbcTransaction(Connection connection) {
         this.connection = connection;
     }
 

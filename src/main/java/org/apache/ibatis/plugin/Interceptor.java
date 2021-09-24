@@ -26,6 +26,7 @@ public interface Interceptor {
 
     /**
      * 拦截方法
+     *
      * @param invocation 调用信息
      * @return 调用结果
      * @throws Throwable 异常
@@ -41,6 +42,7 @@ public interface Interceptor {
 
     /**
      * 设置拦截器属性
+     *
      * @param properties 属性配置
      */
     default void setProperties(Properties properties) {

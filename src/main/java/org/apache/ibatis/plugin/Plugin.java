@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,23 +60,6 @@ public class Plugin implements InvocationHandler {
         return target;
     }
 
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        try {
-            // 获取方法签名已经定义好了的方法集合
-            Set<Method> methods = signatureMap.get(method.getDeclaringClass());
-            if (methods != null && methods.contains(method)) {
-                // 若不为空, 则通过拦截器执行方法
-                return interceptor.intercept(new Invocation(target, method, args));
-            }
-            // 若为空, 则直接反射回调即可
-            return method.invoke(target, args);
-        } catch (Exception e) {
-            throw ExceptionUtil.unwrapThrowable(e);
-        }
-    }
-
     /**
      * 获取{@link Interceptor}上的方法签名, 它定义了此拦截器要作用的方法
      *
@@ -127,6 +110,22 @@ public class Plugin implements InvocationHandler {
             type = type.getSuperclass();
         }
         return interfaces.toArray(new Class<?>[0]);
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        try {
+            // 获取方法签名已经定义好了的方法集合
+            Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+            if (methods != null && methods.contains(method)) {
+                // 若不为空, 则通过拦截器执行方法
+                return interceptor.intercept(new Invocation(target, method, args));
+            }
+            // 若为空, 则直接反射回调即可
+            return method.invoke(target, args);
+        } catch (Exception e) {
+            throw ExceptionUtil.unwrapThrowable(e);
+        }
     }
 
 }

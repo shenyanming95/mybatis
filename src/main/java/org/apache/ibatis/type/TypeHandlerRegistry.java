@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,30 +27,15 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.chrono.JapaneseDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 类型注册器TypeHandlerRegistry，它可以注册类型处理器，
- * 实际上就是将JdbcType和TypeHandler关联起来，等在解析参数时，对不同的JdbcType选择对应的TypeHandler来解析参数
+ * 类型注册器, 用来管理{@link TypeHandler}. 实际上就是将{@link JdbcType}和{@link TypeHandler}关联起来,
+ * 在解析参数时, 对不同的{@link JdbcType}选择对应的{@link TypeHandler}.
  *
  * @author Clinton Begin
  * @author Kazuki Shimizu
@@ -184,6 +169,7 @@ public final class TypeHandlerRegistry {
     /**
      * Set a default {@link TypeHandler} class for {@link Enum}.
      * A default {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
+     *
      * @param typeHandler a type handler class for {@link Enum}
      * @since 3.4.5
      */

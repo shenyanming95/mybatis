@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,7 @@ public interface TransactionFactory {
 
     /**
      * Sets transaction factory custom properties.
+     *
      * @param props the new properties
      */
     default void setProperties(Properties props) {
@@ -38,6 +39,7 @@ public interface TransactionFactory {
 
     /**
      * Creates a {@link Transaction} out of an existing connection.
+     *
      * @param conn Existing database connection
      * @return Transaction
      * @since 3.1.0
@@ -46,8 +48,9 @@ public interface TransactionFactory {
 
     /**
      * Creates a {@link Transaction} out of a datasource.
+     *
      * @param dataSource DataSource to take the connection from
-     * @param level Desired isolation level
+     * @param level      Desired isolation level
      * @param autoCommit Desired autocommit
      * @return Transaction
      * @since 3.1.0

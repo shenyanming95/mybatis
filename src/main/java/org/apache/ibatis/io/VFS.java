@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,52 +34,11 @@ import java.util.List;
  * @author Ben Gunter
  */
 public abstract class VFS {
-    private static final Log log = LogFactory.getLog(VFS.class);
-
     // 内置VFS实现类数组
     public static final Class<?>[] IMPLEMENTATIONS = {JBoss6VFS.class, DefaultVFS.class};
-
     // 自定义的VFS实现类的数组
     public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
-
-
-    /**
-     * VFS的持有类, 单例
-     */
-    private static class VFSHolder {
-        static final VFS INSTANCE = createVFS();
-
-        @SuppressWarnings("unchecked")
-        static VFS createVFS() {
-            // Try the user implementations first, then the built-ins
-            List<Class<? extends VFS>> impls = new ArrayList<>();
-            impls.addAll(USER_IMPLEMENTATIONS);
-            impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
-
-            // 选择最后一个可用的VFS实现类
-            VFS vfs = null;
-            for (int i = 0; vfs == null || !vfs.isValid(); i++) {
-                Class<? extends VFS> impl = impls.get(i);
-                try {
-                    vfs = impl.getDeclaredConstructor().newInstance();
-                    if (!vfs.isValid() && log.isDebugEnabled()) {
-                        log.debug("VFS implementation " + impl.getName()
-                                + " is not valid in this environment.");
-                    }
-                } catch (InstantiationException | IllegalAccessException |
-                        NoSuchMethodException | InvocationTargetException e) {
-                    log.error("Failed to instantiate " + impl, e);
-                    return null;
-                }
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("Using VFS adapter " + vfs.getClass().getName());
-            }
-
-            return vfs;
-        }
-    }
+    private static final Log log = LogFactory.getLog(VFS.class);
 
     /**
      * 获取VFS实现类, 可能会返回null
@@ -183,5 +142,43 @@ public abstract class VFS {
             names.addAll(list(url, path));
         }
         return names;
+    }
+
+    /**
+     * VFS的持有类, 单例
+     */
+    private static class VFSHolder {
+        static final VFS INSTANCE = createVFS();
+
+        @SuppressWarnings("unchecked")
+        static VFS createVFS() {
+            // Try the user implementations first, then the built-ins
+            List<Class<? extends VFS>> impls = new ArrayList<>();
+            impls.addAll(USER_IMPLEMENTATIONS);
+            impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
+
+            // 选择最后一个可用的VFS实现类
+            VFS vfs = null;
+            for (int i = 0; vfs == null || !vfs.isValid(); i++) {
+                Class<? extends VFS> impl = impls.get(i);
+                try {
+                    vfs = impl.getDeclaredConstructor().newInstance();
+                    if (!vfs.isValid() && log.isDebugEnabled()) {
+                        log.debug("VFS implementation " + impl.getName()
+                                + " is not valid in this environment.");
+                    }
+                } catch (InstantiationException | IllegalAccessException |
+                        NoSuchMethodException | InvocationTargetException e) {
+                    log.error("Failed to instantiate " + impl, e);
+                    return null;
+                }
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Using VFS adapter " + vfs.getClass().getName());
+            }
+
+            return vfs;
+        }
     }
 }

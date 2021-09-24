@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,32 +15,29 @@
  */
 package org.apache.ibatis.transaction.managed;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * {@link Transaction} 让容器管理事务的整个生命周期,
  * 延迟连接检索到的getConnection()被调用. 忽略所有提交或回滚请求, 默认情况下, 它会关闭连接, 但可以被配置为不这样做
  *
  * @author Clinton Begin
- *
  * @see ManagedTransactionFactory
  */
 public class ManagedTransaction implements Transaction {
 
     private static final Log log = LogFactory.getLog(ManagedTransaction.class);
-
+    private final boolean closeConnection;
     private DataSource dataSource;
     private TransactionIsolationLevel level;
     private Connection connection;
-    private final boolean closeConnection;
 
     public ManagedTransaction(Connection connection, boolean closeConnection) {
         this.connection = connection;

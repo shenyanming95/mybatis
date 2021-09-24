@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2009-2020 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- *
  * 包裹JDBC的数据库连接{@link Connection}
  *
  * @author Clinton Begin
@@ -28,6 +27,7 @@ public interface Transaction {
 
     /**
      * Retrieve inner database connection.
+     *
      * @return DataBase connection
      * @throws SQLException the SQL exception
      */
@@ -35,18 +35,21 @@ public interface Transaction {
 
     /**
      * Commit inner database connection.
+     *
      * @throws SQLException the SQL exception
      */
     void commit() throws SQLException;
 
     /**
      * Rollback inner database connection.
+     *
      * @throws SQLException the SQL exception
      */
     void rollback() throws SQLException;
 
     /**
      * Close inner database connection.
+     *
      * @throws SQLException the SQL exception
      */
     void close() throws SQLException;
