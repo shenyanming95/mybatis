@@ -100,7 +100,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 依次解析每一个xml dom
      *
-     * @param root 根目录
+     * @param root 根目录, 即mybatis配置文件的configuration块
      */
     private void parseConfiguration(XNode root) {
         try {

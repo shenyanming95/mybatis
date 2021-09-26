@@ -79,6 +79,9 @@ public enum JdbcType {
         }
     }
 
+    /**
+     * {@link Types}
+     */
     public final int TYPE_CODE;
 
     JdbcType(int code) {

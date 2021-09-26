@@ -44,10 +44,25 @@ public final class TypeHandlerRegistry {
 
     private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = Collections.emptyMap();
 
+    /**
+     * {@link JdbcType} →→ {@link TypeHandler},
+     * 通过 jdbcType 类型获取相应的类型处理器.
+     */
     private final Map<JdbcType, TypeHandler<?>> jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
+
+    /**
+     * {@link Type} →→ {@link JdbcType} →→ {@link TypeHandler}.
+     * 通过 Java类型 定位需要映射的{@link JdbcType}, 再通过{@link JdbcType}映射出{@link TypeHandler}.
+     */
     private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
+
     private final TypeHandler<Object> unknownTypeHandler;
+
+    /**
+     * 所有{@link TypeHandler}的类型映射, 存储结构为：<TypeHandler.class, TypeHandler>
+     */
     private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
+
     private Class<? extends TypeHandler> defaultEnumTypeHandler = EnumTypeHandler.class;
 
     /**
@@ -344,13 +359,22 @@ public final class TypeHandlerRegistry {
         }
     }
 
-    // java type + handler
 
+    /**
+     * 注册 JAVA数据类型 与 类型处理器 的映射关系.
+     * @param javaType java类型
+     * @param typeHandler 类型处理器
+     * @param <T> 具体类型
+     */
     public <T> void register(Class<T> javaType, TypeHandler<? extends T> typeHandler) {
         register((Type) javaType, typeHandler);
     }
 
+    /**
+     * 将Java类型与{@link TypeHandler}关联起来
+     */
     private <T> void register(Type javaType, TypeHandler<? extends T> typeHandler) {
+        // 类型处理器上是否配置了MappedJdbcTypes, 若配置了, 需要
         MappedJdbcTypes mappedJdbcTypes = typeHandler.getClass().getAnnotation(MappedJdbcTypes.class);
         if (mappedJdbcTypes != null) {
             for (JdbcType handledJdbcType : mappedJdbcTypes.value()) {
@@ -378,10 +402,13 @@ public final class TypeHandlerRegistry {
 
     private void register(Type javaType, JdbcType jdbcType, TypeHandler<?> handler) {
         if (javaType != null) {
+            // 通过java type找出指定的map
             Map<JdbcType, TypeHandler<?>> map = typeHandlerMap.get(javaType);
+            // 如果map不存在重新创建一个
             if (map == null || map == NULL_TYPE_HANDLER_MAP) {
                 map = new HashMap<>();
             }
+            // 存储它们的关联关系
             map.put(jdbcType, handler);
             typeHandlerMap.put(javaType, map);
         }

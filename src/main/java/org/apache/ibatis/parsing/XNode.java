@@ -25,14 +25,48 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 /**
+ * 对{@link Node}的封装, 表示一个xml节点, 比如说下面的xml文本.
+ * XNode既可以表示<users>, 也可以表示<user>...
+ *
+ * <pre>
+ *     ------------------------- xml -------------------------
+ *     <root>
+ *         <users>
+ *             <user>
+ *                 <id>123</id>
+ *                 <name>abc</name>
+ *             </user>
+ *         </users>
+ *     </root>
+ *     ------------------------- xml -------------------------
+ * </pre>
+ *
  * @author Clinton Begin
  */
 public class XNode {
 
+    /**
+     * 包裹JDK提供的xml节点, 可以是："<id>123</id>", 取到一个具体值;
+     * 也可以是嵌套节点："<user><id>123</id></user>", 取到其它节点;
+     */
     private final Node node;
+
+    /**
+     * xml节点的名称, 例如 <id>123</id>, 此时的name就是指"id"
+     */
     private final String name;
+
+    /**
+     * xml节点的文本内容
+     */
     private final String body;
+
+    /**
+     * xml节点的属性, 例如 <mapper id="123" name="abc"></mapper>,
+     * 此时解析后的 attributes 就是 id=123,name=abc.
+     */
     private final Properties attributes;
+
     private final Properties variables;
     private final XPathParser xpathParser;
 
@@ -405,8 +439,7 @@ public class XNode {
     }
 
     private String getBodyData(Node child) {
-        if (child.getNodeType() == Node.CDATA_SECTION_NODE
-                || child.getNodeType() == Node.TEXT_NODE) {
+        if (child.getNodeType() == Node.CDATA_SECTION_NODE || child.getNodeType() == Node.TEXT_NODE) {
             String data = ((CharacterData) child).getData();
             data = PropertyParser.parse(data, variables);
             return data;

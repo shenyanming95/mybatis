@@ -19,46 +19,32 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 包裹JDBC的数据库连接{@link Connection}
- *
- * @author Clinton Begin
+ * 事务接口
  */
 public interface Transaction {
 
     /**
-     * Retrieve inner database connection.
-     *
-     * @return DataBase connection
-     * @throws SQLException the SQL exception
+     * 获取底层的数据库连接
      */
     Connection getConnection() throws SQLException;
 
     /**
-     * Commit inner database connection.
-     *
-     * @throws SQLException the SQL exception
+     * 提交底层数据库连接
      */
     void commit() throws SQLException;
 
     /**
-     * Rollback inner database connection.
-     *
-     * @throws SQLException the SQL exception
+     * 回滚底层数据库连接
      */
     void rollback() throws SQLException;
 
     /**
-     * Close inner database connection.
-     *
-     * @throws SQLException the SQL exception
+     * 关闭底层数据库链接
      */
     void close() throws SQLException;
 
     /**
-     * Get transaction timeout if set.
-     *
-     * @return the timeout
-     * @throws SQLException the SQL exception
+     * 获取底层数据库连接的超时配置(如果有配置)
      */
     Integer getTimeout() throws SQLException;
 

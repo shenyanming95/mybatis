@@ -16,7 +16,8 @@
 package org.apache.ibatis.parsing;
 
 /**
- * @author Clinton Begin
+ * 用于表达式转换, 比如mybatis常用的xml语法"#{id}",
+ * 这个类就负责将"id"转换为其它值.
  */
 public interface TokenHandler {
     String handleToken(String content);

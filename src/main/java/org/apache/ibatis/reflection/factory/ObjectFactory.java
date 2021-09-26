@@ -21,8 +21,6 @@ import java.util.Properties;
 /**
  * MyBatis每次创建结果对象的新实例时，都会使用ObjectFactory实例来执行此操作。
  * 默认的ObjectFactory除了使用默认的构造函数实例化目标类外，或者如果存在参数映射，则使用参数化的构造函数实例化目标类
- *
- * @author Clinton Begin
  */
 public interface ObjectFactory {
 

@@ -24,16 +24,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * {@link TypeHandler}的抽象父类, 基本上每一种JDBC类型, 都会通过它的实现类来完成java类型的映射
- *
- * @author Clinton Begin
- * @author Simone Tripodi
- * @author Kzuki Shimizu
+ * {@link TypeHandler}的抽象父类, 基本上每一种JDBC类型, 都会通过它的实现类来完成java类型的映射.
+ * 这里实际上是对JDBC{@link PreparedStatement}的一种封装, 原生的JDBC编码需要我们自己调用
+ * {@link PreparedStatement #setXXX(index)}去替换掉占位符的<b>?</b>号.
  */
 public abstract class BaseTypeHandler<T> extends TypeReference<T> implements TypeHandler<T> {
 
     /**
-     * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203. This field will remove future.
+     * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203.
+     * This field will remove future.
      */
     @Deprecated
     protected Configuration configuration;
@@ -42,7 +41,8 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
      * Sets the configuration.
      *
      * @param c the new configuration
-     * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203. This property will remove future.
+     * @deprecated Since 3.5.0 - See https://github.com/mybatis/mybatis-3/issues/1203.
+     * This property will remove future.
      */
     @Deprecated
     public void setConfiguration(Configuration c) {
@@ -111,8 +111,24 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
      */
     public abstract void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
+    /**
+     * 通过数据库返回的字段名获取值
+     *
+     * @param rs         jdbc结果集, 本质是一个二维数组
+     * @param columnName 字段名
+     * @return 字段名对应的值
+     * @throws SQLException 异常
+     */
     public abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;
 
+    /**
+     * 数据库返回的字段, 通过下标获取值
+     *
+     * @param rs          jdbc结果集, 本质是一个二维数组
+     * @param columnIndex 字段的下标
+     * @return 字段名对应的值
+     * @throws SQLException 异常
+     */
     public abstract T getNullableResult(ResultSet rs, int columnIndex) throws SQLException;
 
     public abstract T getNullableResult(CallableStatement cs, int columnIndex) throws SQLException;

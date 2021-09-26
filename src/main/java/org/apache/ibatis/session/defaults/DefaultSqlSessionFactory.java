@@ -28,9 +28,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 用来获取{@link SqlSession}的工厂类
- *
- * @author Clinton Begin
+ * 默认的{@link SqlSessionFactory}实现类
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
@@ -99,14 +97,18 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
         try {
             // 获取在sqlMapConfig.xml配置的Environment信息
             final Environment environment = configuration.getEnvironment();
+
             // 通过Environment.getTransactionFactory()获取事务工厂, 默认为
             // JdbcTransactionFactory；最后通过事务工厂new一个事务, 默认为JdbcTransaction
             final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
             tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+
             // 通过全局配置对象Configuration创建出Executor实例,
             final Executor executor = configuration.newExecutor(tx, execType);
+
             // 最后new一个DefaultSqlSession实例
             return new DefaultSqlSession(configuration, executor, autoCommit);
+
         } catch (Exception e) {
             closeTransaction(tx); // may have fetched a connection so lets call close()
             throw ExceptionFactory.wrapException("Error opening session.  Cause: " + e, e);

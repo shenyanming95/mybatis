@@ -18,17 +18,12 @@ package org.apache.ibatis.type;
 import java.lang.annotation.*;
 
 /**
- * The annotation that specify jdbc types to map {@link TypeHandler}.
- *
- * <p>
- * <b>How to use:</b>
+ * 用来指定多个{@link JdbcType}映射的{@link TypeHandler}.
  * <pre>
- * &#064;MappedJdbcTypes({JdbcType.CHAR, JdbcType.VARCHAR})
- * public class StringTrimmingTypeHandler implements TypeHandler&lt;String&gt; {
- *   // ...
- * }
+ *     @ MappedJdbcTypes({JdbcType.CHAR, JdbcType.VARCHAR})
+ *     public class StringTrimmingTypeHandler implements TypeHandler<String> {
+ *     }
  * </pre>
- * @author Eduardo Macarron
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -36,8 +31,6 @@ import java.lang.annotation.*;
 public @interface MappedJdbcTypes {
     /**
      * Returns jdbc types to map {@link TypeHandler}.
-     *
-     * @return jdbc types
      */
     JdbcType[] value();
 

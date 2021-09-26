@@ -18,9 +18,7 @@ package org.apache.ibatis.session;
 import java.sql.Connection;
 
 /**
- * 用于获取{@link SqlSession}
- *
- * @author Clinton Begin
+ * 普通工厂模式, 用来生成一个{@link SqlSession}.
  */
 public interface SqlSessionFactory {
 

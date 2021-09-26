@@ -16,7 +16,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
- * @author Clinton Begin
+ * 解析mapper中的各种标签
  */
 public interface SqlNode {
     boolean apply(DynamicContext context);

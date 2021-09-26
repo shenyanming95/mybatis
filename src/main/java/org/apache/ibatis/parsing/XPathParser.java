@@ -36,16 +36,56 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * 对JDC提供的xml解析器{@link XPath}做了一层封装.
+ * 用来解析xml文本.
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
 public class XPathParser {
 
+    /**
+     * 整个xml文本的根节点, 比如说下面一段xml数据, 此时{@link #document}就表示"<users>"节点
+     * <pre>
+     * ========================== xml content ==========================
+     *     <users>
+     *         <user>
+     *             <id>100</id>
+     *             <name>Tom</name>
+     *             <age>30</age>
+     *             <cars>
+     *                 <car>BMW</car>
+     *                 <car>Audi</car>
+     *                 <car>Benz</car>
+     *             </cars>
+     *         </user>
+     *     </users>
+     * ========================== xml content ==========================
+     * </pre>
+     */
     private final Document document;
+
+    /**
+     * 为true表示开启验证
+     */
     private boolean validation;
+
+    /**
+     * 实体解析
+     */
     private EntityResolver entityResolver;
+
+    /**
+     * 参数
+     */
     private Properties variables;
+
+    /**
+     * 真正干活(解析xml)的对象, 由JDK提供.
+     */
     private XPath xpath;
+
+    // ===================================== 重载的构造方法-start ========================================================
 
     public XPathParser(String xml) {
         commonConstructor(false, null, null);
@@ -127,9 +167,13 @@ public class XPathParser {
         this.document = document;
     }
 
+    // ===================================== 重载的构造方法-end ========================================================
+
     public void setVariables(Properties variables) {
         this.variables = variables;
     }
+
+    // ===================================== 多种解析xml值的方法-start ==================================================
 
     public String evalString(String expression) {
         return evalString(document, expression);
@@ -214,6 +258,16 @@ public class XPathParser {
         return new XNode(this, node, variables);
     }
 
+    // ===================================== 多种解析xml值的方法-end ==================================================
+
+    /**
+     * xml解析的最终方法, 通过指定根节点和表达式, 解析数据块
+     *
+     * @param expression 表达式
+     * @param root       根节点, 可以是整个文档节点即{@link #document}, 也可以是文档里面的某个节点对象
+     * @param returnType 解析后的值类型
+     * @return 节点值
+     */
     private Object evaluate(String expression, Object root, QName returnType) {
         try {
             return xpath.evaluate(expression, root, returnType);
@@ -222,6 +276,13 @@ public class XPathParser {
         }
     }
 
+    /**
+     * 指定一个xml数据源, 为其生成一个上下文{@link org.w3c.dom.Document}.
+     * 必须要在{@link #commonConstructor(boolean, Properties, EntityResolver)}调用后再调用.
+     *
+     * @param inputSource xml数据源
+     * @return 上下文
+     */
     private Document createDocument(InputSource inputSource) {
         // important: this must only be called AFTER common constructor
         try {
@@ -259,6 +320,9 @@ public class XPathParser {
         }
     }
 
+    /**
+     * 构造方法中通用的成员属性赋值, mybatis将其提取出来, 减少代码冗余
+     */
     private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
         this.validation = validation;
         this.entityResolver = entityResolver;

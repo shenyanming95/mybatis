@@ -19,12 +19,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * {@link LanguageDriver}注册器
+ *
  * @author Frank D. Martinez [mnesarco]
  */
 public class LanguageDriverRegistry {
 
+    /**
+     * 在JAVA中, 大部分框架的 xxxRegistry 实现类, 底层都是通过Map来存储数据.
+     */
     private final Map<Class<? extends LanguageDriver>, LanguageDriver> LANGUAGE_DRIVER_MAP = new HashMap<>();
 
+    /**
+     * 默认的脚本语言驱动实现
+     */
     private Class<? extends LanguageDriver> defaultDriverClass;
 
     public void register(Class<? extends LanguageDriver> cls) {

@@ -24,12 +24,12 @@ import java.sql.ResultSet;
 import java.util.*;
 
 /**
- * @author Clinton Begin
+ * 用于管理整个mybatis的别名
  */
 public class TypeAliasRegistry {
 
     /**
-     * 解析mybatis配置文件得到的别名信息都会放置到这个Map上
+     * 底层用Map来存储所有别名
      */
     private final Map<String, Class<?>> typeAliases = new HashMap<>();
 

@@ -42,6 +42,7 @@ public class JdbcTransaction implements Transaction {
 
     /**
      * 有两种方式创建事务, 一是给数据源, 然后根据配置来创建{@link Connection}
+     * @see #JdbcTransaction(Connection) 
      */
     public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
         dataSource = ds;
@@ -51,6 +52,7 @@ public class JdbcTransaction implements Transaction {
 
     /**
      * 有两种方式创建事务, 一是直接给一个JDBC连接
+     * @see #JdbcTransaction(DataSource, TransactionIsolationLevel, boolean)
      */
     public JdbcTransaction(Connection connection) {
         this.connection = connection;

@@ -20,15 +20,11 @@ import java.lang.reflect.Type;
 
 /**
  * 引用泛型类型
- *
- * @param <T> the referenced type
- * @author Simone Tripodi
- * @since 3.1.0
  */
 public abstract class TypeReference<T> {
 
     /**
-     *
+     *  表示{@link TypeReference} 中的泛型 T
      */
     private final Type rawType;
 
@@ -37,23 +33,24 @@ public abstract class TypeReference<T> {
     }
 
     Type getSuperclassTypeParameter(Class<?> clazz) {
+        // 获取带泛型的父类类型, 详见此类main()方法
         Type genericSuperclass = clazz.getGenericSuperclass();
+        // 如果继承的父类没有泛型, 尝试继续向上寻找.
         if (genericSuperclass instanceof Class) {
             // try to climb up the hierarchy until meet something useful
             if (TypeReference.class != genericSuperclass) {
                 return getSuperclassTypeParameter(clazz.getSuperclass());
             }
-
             throw new TypeException("'" + getClass() + "' extends TypeReference but misses the type parameter. "
                     + "Remove the extension or add a type parameter to it.");
         }
-
+        // 因为 TypeReference<T> 只有一个泛型, 所以直接取[0]就能拿到这个泛型
         Type rawType = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
-        // TODO remove this when Reflector is fixed to return Types
+        // 本身还是一个参数类型, 比如 TypeReference<List<String>>, 那就直接获取它的rawType, 拿到实际的泛型类型
+        // 即例子中的String.class
         if (rawType instanceof ParameterizedType) {
             rawType = ((ParameterizedType) rawType).getRawType();
         }
-
         return rawType;
     }
 
@@ -66,4 +63,19 @@ public abstract class TypeReference<T> {
         return rawType.toString();
     }
 
+    /**
+     * for test
+     */
+    public static void main(String[] args) {
+        Example example = new Example();
+        Class<? extends Example> clazz = example.getClass();
+
+        // 一个获取父类的class类型, 一个获取带泛型的class类型
+        System.out.println(clazz.getSuperclass());
+        System.out.println(clazz.getGenericSuperclass());
+    }
+
+    private static class Example extends TypeReference<String> {
+
+    }
 }

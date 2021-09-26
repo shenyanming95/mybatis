@@ -29,8 +29,6 @@ import java.util.Properties;
  * 使用{@link SqlSessionFactoryBuilder}读取sqlMapConfig.xml, 获取到
  * 一个{@link SqlSessionFactory}对象, 用它来管理{@link SqlSession},
  * 可以说, 这是整个框架运行的起点.
- *
- * @author Clinton Begin
  */
 public class SqlSessionFactoryBuilder {
 
