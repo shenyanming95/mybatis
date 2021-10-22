@@ -16,6 +16,8 @@
 package org.apache.ibatis.exceptions;
 
 /**
+ * @deprecated 改用 PersistenceException 作为所有异常的基类
+ *
  * @author Clinton Begin
  */
 @Deprecated

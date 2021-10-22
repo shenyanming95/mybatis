@@ -24,12 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MyBatis对外暴露的核心接口, 可以通过它执行命令，获取映射器和管理事务。
+ * MyBatis对外暴露的核心接口, 可以通过它执行命令, 获取映射器和管理事务.
  *
  * @author Clinton Begin
  */
 public interface SqlSession extends Closeable {
-
 
     <T> T selectOne(String statement);
 

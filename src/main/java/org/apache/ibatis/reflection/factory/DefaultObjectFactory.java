@@ -88,7 +88,10 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         }
     }
 
-
+    /**
+     * 判断实际要创建的返回值类型
+     * @param type 指定类型
+     */
     protected Class<?> resolveInterface(Class<?> type) {
         Class<?> classToCreate;
         if (type == List.class || type == Collection.class || type == Iterable.class) {
@@ -98,7 +101,6 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
             // 如果是Map类型, 就创建HashMap
             classToCreate = HashMap.class;
         } else if (type == SortedSet.class) {
-            // issue #510 Collections Support
             // 如果是SortedSet类型, 就创建TreeSet
             classToCreate = TreeSet.class;
         } else if (type == Set.class) {

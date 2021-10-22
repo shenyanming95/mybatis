@@ -47,11 +47,23 @@ import java.util.Map;
  */
 public class DefaultSqlSession implements SqlSession {
 
+    /**
+     * 全局配置
+     */
     private final Configuration configuration;
+
+    /**
+     * 真正执行sql的组件
+     */
     private final Executor executor;
 
+    /**
+     * 是否需要自动提交
+     */
     private final boolean autoCommit;
+
     private boolean dirty;
+
     private List<Cursor<?>> cursorList;
 
     public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {
@@ -72,7 +84,8 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
-        // Popular vote was to return null on 0 results and throw exception on too many.
+        // selectOne() 底层实际是通过 selectList() 实现的, 因此如果数据库返回的数据超过1条, 就会
+        // 抛出异常.
         List<T> list = this.selectList(statement, parameter);
         if (list.size() == 1) {
             return list.get(0);
@@ -95,9 +108,12 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
+        // 仍然是调用 selectList() 查询数据
         final List<? extends V> list = selectList(statement, parameter, rowBounds);
         final DefaultMapResultHandler<K, V> mapResultHandler = new DefaultMapResultHandler<>(mapKey,
-                configuration.getObjectFactory(), configuration.getObjectWrapperFactory(), configuration.getReflectorFactory());
+                configuration.getObjectFactory(),
+                configuration.getObjectWrapperFactory(),
+                configuration.getReflectorFactory());
         final DefaultResultContext<V> context = new DefaultResultContext<>();
         for (V o : list) {
             context.nextResultObject(o);

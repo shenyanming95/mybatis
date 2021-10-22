@@ -16,12 +16,18 @@
 package org.apache.ibatis.session;
 
 /**
- * @author Clinton Begin
+ * 查询数据库后的结果封装
  */
 public interface ResultContext<T> {
 
+    /**
+     * 获取数据库返回的结果
+     */
     T getResultObject();
 
+    /**
+     * 获取数据库返回的结果数量
+     */
     int getResultCount();
 
     boolean isStopped();

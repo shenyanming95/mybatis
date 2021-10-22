@@ -18,6 +18,11 @@ package org.apache.ibatis.reflection.invoker;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * 用于封装反射执行逻辑的接口.
+ * 比如方法回调接口-{@link MethodInvoker},
+ * field属性取值-{@link GetFieldInvoker},
+ * field属性设值-{@link SetFieldInvoker}.
+ *
  * @author Clinton Begin
  */
 public interface Invoker {

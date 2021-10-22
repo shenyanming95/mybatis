@@ -18,7 +18,7 @@ package org.apache.ibatis.session;
 import java.sql.Connection;
 
 /**
- * 事务隔离级别
+ * 事务隔离级别, 对应着JDK自带的{@link Connection}
  *
  * @author Clinton Begin
  */

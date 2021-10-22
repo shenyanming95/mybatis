@@ -24,14 +24,15 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * This class represents a cached set of class definition information that
- * allows for easy mapping between property names and getter/setter methods.
- *
- * @author Clinton Begin
+ * 用来缓存一个类型{@link Class}的属性和方法, 减少了反射的性能消耗.
  */
 public class Reflector {
 
+    /**
+     * 对这个类型的变量和方法做缓存
+     */
     private final Class<?> type;
+
     private final String[] readablePropertyNames;
     private final String[] writablePropertyNames;
     private final Map<String, Invoker> setMethods = new HashMap<>();
@@ -44,6 +45,7 @@ public class Reflector {
 
     public Reflector(Class<?> clazz) {
         type = clazz;
+        // 设置默认的无参构造方法
         addDefaultConstructor(clazz);
         addGetMethods(clazz);
         addSetMethods(clazz);
@@ -77,15 +79,20 @@ public class Reflector {
     }
 
     private void addDefaultConstructor(Class<?> clazz) {
+        // 获取这个类型定义的所有构造方法
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        // 判断是否存在无参默认构造方法, 存在的话, 将其保存在 this.defaultConstructor 中.
         Arrays.stream(constructors).filter(constructor -> constructor.getParameterTypes().length == 0)
                 .findAny().ifPresent(constructor -> this.defaultConstructor = constructor);
     }
 
     private void addGetMethods(Class<?> clazz) {
         Map<String, List<Method>> conflictingGetters = new HashMap<>();
+        // 获取这个类的所有方法, 包括它父类和接口(如果此类是一个抽象类)定义的所有方法
         Method[] methods = getClassMethods(clazz);
-        Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
+        Arrays.stream(methods)
+                // 过滤出getter()方法, 它要求无参并且方法名为getxxx()
+                .filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
                 .forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
         resolveGetterConflicts(conflictingGetters);
     }
@@ -264,42 +271,49 @@ public class Reflector {
     }
 
     /**
-     * This method returns an array containing all methods
-     * declared in this class and any superclass.
-     * We use this method, instead of the simpler <code>Class.getMethods()</code>,
-     * because we want to look for private methods as well.
-     *
-     * @param clazz The class
-     * @return An array containing all methods in this class
+     * 获取这个类型及其它父类的所有方法
      */
     private Method[] getClassMethods(Class<?> clazz) {
+        // <方法签名, 方法对象>
         Map<String, Method> uniqueMethods = new HashMap<>();
+        // 从它自身开始向上找, 直到遇到顶层的Object类
         Class<?> currentClass = clazz;
         while (currentClass != null && currentClass != Object.class) {
+            // 获取类声明的所有的方法, 将其添加到Map中
             addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
 
-            // we also need to look for interface methods -
-            // because the class may be abstract
+            // 还需要获取该类实现的接口, 再获取它们所有的方法, 因此当前这个类可能是一个抽象方法
             Class<?>[] interfaces = currentClass.getInterfaces();
             for (Class<?> anInterface : interfaces) {
                 addUniqueMethods(uniqueMethods, anInterface.getMethods());
             }
 
+            // 切换到父类继续搜索
             currentClass = currentClass.getSuperclass();
         }
 
+        // 将集合转换为数组返回
         Collection<Method> methods = uniqueMethods.values();
-
         return methods.toArray(new Method[0]);
     }
 
+    /**
+     * 将方法添加到Map中
+     * @param uniqueMethods 方法容器
+     * @param methods 待添加的方法
+     */
     private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
+        /*
+         * Java中的桥接方法（Bridge Method）是一种为了实现Java语言某些语言特性而由编译器自动生成的方法:
+         * 1)、协变返回值类型：是指子类重写父类方法, 但返回值跟父类定义的方法不一致, 是一个更具体类型. 由于JVM对方法签名区分是算入了返回值的, 因此需要为子类也生成一个与父类方法一样的桥接方法。
+         * 2)、类型擦除：泛型是JDK 1.5引入, 在1.5之前所有集合都是Object, 但是在1.5以后, 集合有了具体类型, 为了兼容旧版本, 编译器做了类型擦除, 同时会生成一个Object类型的桥接方法。
+         */
         for (Method currentMethod : methods) {
+            // 桥接方法不处理
             if (!currentMethod.isBridge()) {
+                // 获取方法签名：返回值类型 + 方法名 + 方法参数类型
                 String signature = getSignature(currentMethod);
-                // check to see if the method is already known
-                // if it is known, then an extended class must have
-                // overridden a method
+                // 不包含这个方法签名才可以添加到Map中.
                 if (!uniqueMethods.containsKey(signature)) {
                     uniqueMethods.put(signature, currentMethod);
                 }
@@ -307,13 +321,23 @@ public class Reflector {
         }
     }
 
+    /**
+     * 获取JAVA语言层面的方法签名, 注意JAVA语言的方法签名跟JVM的方法签名维度不一样,
+     * JVM算入了方法的返回值. MyBatis在这里跟JVM保持一直, 它也计入了返回值.
+     *
+     * @param method 方法类型
+     * @return 签名串
+     */
     private String getSignature(Method method) {
         StringBuilder sb = new StringBuilder();
+        // 方法返回值类型
         Class<?> returnType = method.getReturnType();
         if (returnType != null) {
             sb.append(returnType.getName()).append('#');
         }
+        // 方法自身的名称
         sb.append(method.getName());
+        // 方法参数的类型
         Class<?>[] parameters = method.getParameterTypes();
         for (int i = 0; i < parameters.length; i++) {
             sb.append(i == 0 ? ':' : ',').append(parameters[i].getName());
