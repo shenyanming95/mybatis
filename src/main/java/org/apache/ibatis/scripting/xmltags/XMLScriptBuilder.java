@@ -30,12 +30,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Clinton Begin
+ * 专门用来解析各个mapper.xml文件中的sql语句标签, 如：
+ * <select>、<insert>、<update>、<delete> 等.
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
     private final XNode context;
     private final Class<?> parameterType;
+
+    /**
+     * mybatis支持多种sql语句标签, 比方说:
+     * <pre>
+     *     <select>
+     *         select * from user
+     *         <where>
+     *             id in
+     *             <foreach collection="list" item="item">
+     *                 #{item}
+     *             </foreach>
+     *         </where>
+     *     </select>
+     * </pre>
+     * 这个集合就是用来处理这些标签语句块的
+     */
     private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
     private boolean isDynamic;
 
@@ -47,6 +64,7 @@ public class XMLScriptBuilder extends BaseBuilder {
         super(configuration);
         this.context = context;
         this.parameterType = parameterType;
+        // 初始化各式各样的标签语句块
         initNodeHandlerMap();
     }
 
@@ -63,6 +81,10 @@ public class XMLScriptBuilder extends BaseBuilder {
         nodeHandlerMap.put("bind", new BindHandler());
     }
 
+    /**
+     *
+     * @return
+     */
     public SqlSource parseScriptNode() {
         MixedSqlNode rootSqlNode = parseDynamicTags(context);
         SqlSource sqlSource;
@@ -101,7 +123,16 @@ public class XMLScriptBuilder extends BaseBuilder {
         return new MixedSqlNode(contents);
     }
 
+    /**
+     * sql语句标签节点处理
+     */
     private interface NodeHandler {
+
+        /**
+         * 语句块处理逻辑
+         * @param nodeToHandle 需要处理的语句块
+         * @param targetContents 处理完的sql节点放到这个集合
+         */
         void handleNode(XNode nodeToHandle, List<SqlNode> targetContents);
     }
 

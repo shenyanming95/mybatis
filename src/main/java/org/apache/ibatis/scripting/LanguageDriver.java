@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.scripting;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -42,23 +46,28 @@ public interface LanguageDriver {
     ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql);
 
     /**
-     * Creates an {@link SqlSource} that will hold the statement read from a mapper xml file.
-     * It is called during startup, when the mapped statement is read from a class or an xml file.
+     * mybatis框架启动时, 在构建{@link MappedStatement}时调用, 这个方法用于从
+     * 各个 xxxMapper.xml 文件解析出各个标签
+     * <pre>
+     *     <select>、<update>、<insert>、<delete>
+     * </pre>
+     * 为其生成一个{@link SqlSource}.
      *
-     * @param configuration The MyBatis configuration
-     * @param script        XNode parsed from a XML file
-     * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be null.
+     * @param configuration 全局配置类
+     * @param script        从xml文件解析到XNode节点, 其实就是各个：<select>、<update>、<insert>、<delete>标签
+     * @param parameterType 参数类型, 可能为null
      * @return the sql source
      */
     SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType);
 
     /**
-     * Creates an {@link SqlSource} that will hold the statement read from an annotation.
-     * It is called during startup, when the mapped statement is read from a class or an xml file.
+     * mybatis框架启动时, 在构建{@link MappedStatement}时调用, 这个方法用于从
+     * 各个注解中：{@link Select}、{@link Insert}、{@link Update}、{@link Delete} 获取sql语句,
+     * 为其生成一个{@link SqlSource}.
      *
-     * @param configuration The MyBatis configuration
-     * @param script        The content of the annotation
-     * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be null.
+     * @param configuration 全局配置类
+     * @param script        注解中的sql语句, 即{@link Select}、{@link Insert}...
+     * @param parameterType 参数类型, 可能为null
      * @return the sql source
      */
     SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType);

@@ -21,6 +21,11 @@ package org.apache.ibatis.mapping;
  */
 public interface SqlSource {
 
+    /**
+     * 将原始的sql(比方说写在xml或者注解中的sql), 转换成真正能在数据库执行的SQL
+     * @param parameterObject 参数, 用来设置
+     * @return 实际SQL
+     */
     BoundSql getBoundSql(Object parameterObject);
 
 }

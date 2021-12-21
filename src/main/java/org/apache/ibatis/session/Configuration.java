@@ -97,8 +97,19 @@ public class Configuration {
     protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
+
+    /**
+     * 存储已经加载过的路径地址
+     */
     protected final Set<String> loadedResources = new HashSet<>();
+
     protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
+
+    /**
+     * 下面这四个集合, 作用是一样的.
+     * 就是预防在加载组件A的时候, 存在引用关系 A → B, 此时组件B还未加载, mybatis的做法就是将组件加载逻辑封装起来,
+     * 然后丢到这些集合中, 在后面再处理.
+     */
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<>();
     protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<>();
     protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<>();

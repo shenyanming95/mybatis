@@ -18,31 +18,13 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 替换原始串中被"${}"包裹的文本串, 比方说：
+ * abc${name}ee, 指定一个{key=name, value=1}的变量集, 就会自动替换成: abc1ee
  */
 public class PropertyParser {
 
     private static final String KEY_PREFIX = "org.apache.ibatis.parsing.PropertyParser.";
-    /**
-     * The special property key that indicate whether enable a default value on placeholder.
-     * <p>
-     * The default value is {@code false} (indicate disable a default value on placeholder)
-     * If you specify the {@code true}, you can specify key and default value on placeholder (e.g. {@code ${db.username:postgres}}).
-     * </p>
-     *
-     * @since 3.4.2
-     */
     public static final String KEY_ENABLE_DEFAULT_VALUE = KEY_PREFIX + "enable-default-value";
-
-    /**
-     * The special property key that specify a separator for key and default value on placeholder.
-     * <p>
-     * The default separator is {@code ":"}.
-     * </p>
-     *
-     * @since 3.4.2
-     */
     public static final String KEY_DEFAULT_VALUE_SEPARATOR = KEY_PREFIX + "default-value-separator";
 
     private static final String ENABLE_DEFAULT_VALUE = "false";

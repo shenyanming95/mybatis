@@ -30,12 +30,21 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @author Clinton Begin
+ * {@link MappedStatement}构造器, 用来解析mapper文件中的sql标签, 即：
+ * <select>标签, 或者<insert>标签, 或者<update>标签, 或者<delete>标签
  */
 public class XMLStatementBuilder extends BaseBuilder {
 
+    /**
+     * Assistant直译为助手, 实际就是一个工具类的作用, 将一些通用方法收敛到这个类里面
+     */
     private final MapperBuilderAssistant builderAssistant;
+
+    /**
+     * 一个{@link XNode}就是一个<select>标签, 或者<insert>标签, 或者<update>标签, 或者<delete>标签
+     */
     private final XNode context;
+
     private final String requiredDatabaseId;
 
     public XMLStatementBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, XNode context) {
@@ -49,34 +58,45 @@ public class XMLStatementBuilder extends BaseBuilder {
         this.requiredDatabaseId = databaseId;
     }
 
+    /**
+     * 封装了解析sql标签的逻辑
+     */
     public void parseStatementNode() {
         String id = context.getStringAttribute("id");
         String databaseId = context.getStringAttribute("databaseId");
-
         if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
             return;
         }
-
+        // 获取标签的名称, 一般即：select/insert/update/delete,
+        // 接着再解析出标签对应的命令类型
         String nodeName = context.getNode().getNodeName();
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+        // 判断一下是否为查询语句
         boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+        // 标签自带的额外属性
         boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
         boolean useCache = context.getBooleanAttribute("useCache", isSelect);
         boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
         // Include Fragments before parsing
+        // TODO 待分析
         XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
         includeParser.applyIncludes(context.getNode());
 
+        // 获取参数的class类型
         String parameterType = context.getStringAttribute("parameterType");
         Class<?> parameterTypeClass = resolveClass(parameterType);
 
+        // 获取脚本解析驱动实现, 一般使用mybatis是很少指定lang属性,
+        // 因此这个脚本解析驱动默认实现都是：XMLLanguageDriver
         String lang = context.getStringAttribute("lang");
         LanguageDriver langDriver = getLanguageDriver(lang);
 
+        // TODO
         // Parse selectKey after includes and remove them.
         processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
+        // TODO
         // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
         KeyGenerator keyGenerator;
         String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
@@ -89,8 +109,11 @@ public class XMLStatementBuilder extends BaseBuilder {
                     ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
         }
 
+        // 通过脚本解析驱动来生成sqlSource
         SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
         StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+
+        // 标签标签上的其它属性值
         Integer fetchSize = context.getIntAttribute("fetchSize");
         Integer timeout = context.getIntAttribute("timeout");
         String parameterMap = context.getStringAttribute("parameterMap");
@@ -106,6 +129,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         String keyColumn = context.getStringAttribute("keyColumn");
         String resultSets = context.getStringAttribute("resultSets");
 
+        // 拿着前面解析和获取到的数据, 组装成一个MappedStatement
         builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
                 fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
                 resultSetTypeEnum, flushCache, useCache, resultOrdered,

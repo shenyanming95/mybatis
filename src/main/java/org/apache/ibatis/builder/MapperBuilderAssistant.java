@@ -35,8 +35,17 @@ import java.util.*;
 public class MapperBuilderAssistant extends BaseBuilder {
 
     private final String resource;
+
+    /**
+     * mapper.xml文件的命名空间(namespace), 一般就是对应mapper接口的全类名
+     */
     private String currentNamespace;
+
+    /**
+     * mapper文件使用的二级缓存
+     */
     private Cache currentCache;
+
     private boolean unresolvedCacheRef; // issue #676
 
     public MapperBuilderAssistant(Configuration configuration, String resource) {

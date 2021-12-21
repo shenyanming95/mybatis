@@ -15,6 +15,7 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -29,7 +30,7 @@ import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Eduardo Macarron
+ * 默认的sql语句解析器, 专门用来解析写 xxxMapper.xml 或者 各个注解({@link Select}) 的sql.
  */
 public class XMLLanguageDriver implements LanguageDriver {
 
@@ -40,6 +41,7 @@ public class XMLLanguageDriver implements LanguageDriver {
 
     @Override
     public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType) {
+        // 通过创建XMLScriptBuilder来解析sql标签
         XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
         return builder.parseScriptNode();
     }

@@ -32,14 +32,17 @@ import java.io.Reader;
 import java.util.*;
 
 /**
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 用来解析每一个mapper.xml文件
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
     private final XPathParser parser;
     private final MapperBuilderAssistant builderAssistant;
     private final Map<String, XNode> sqlFragments;
+
+    /**
+     * mapper文件的逻辑地址, 比方说：org/apache/ibatis/builder/AuthorMapper.xml
+     */
     private final String resource;
 
     @Deprecated
@@ -73,7 +76,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
 
     public void parse() {
+        // 该mapper.xml文件未被加载
         if (!configuration.isResourceLoaded(resource)) {
+            // 每个mapper文件的根地址就是<mapper>, 所以从这里开始解析配置文件
             configurationElement(parser.evalNode("/mapper"));
             configuration.addLoadedResource(resource);
             bindMapperForNamespace();
@@ -88,18 +93,30 @@ public class XMLMapperBuilder extends BaseBuilder {
         return sqlFragments.get(refid);
     }
 
+    /**
+     * http://mybatis.org/dtd/mybatis-3-mapper.dtd
+     *
+     * @param context mapper文件的根目录
+     */
     private void configurationElement(XNode context) {
         try {
+            // mapper文件必须指定namespace
             String namespace = context.getStringAttribute("namespace");
             if (namespace == null || namespace.isEmpty()) {
                 throw new BuilderException("Mapper's namespace cannot be empty");
             }
             builderAssistant.setCurrentNamespace(namespace);
+            // 解析<cache-ref>标签, cache-ref代表引用别的命名空间的Cache配置, 两个命名空间的操作使用的是同一个Cache
             cacheRefElement(context.evalNode("cache-ref"));
+            // 解析<cache>标签, 这是mybatis提供的二级缓存
             cacheElement(context.evalNode("cache"));
+            // 解析<parameterMap>标签
             parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+            // 解析<resultMap>标签
             resultMapElements(context.evalNodes("/mapper/resultMap"));
+            // 解析<sql>标签
             sqlElement(context.evalNodes("/mapper/sql"));
+            // 解析各个sql语句块
             buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
         } catch (Exception e) {
             throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -115,6 +132,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
         for (XNode context : list) {
+            // 通过XMLStatementBuilder来构建MappedStatement
             final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
             try {
                 statementParser.parseStatementNode();
@@ -171,7 +189,14 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private void cacheRefElement(XNode context) {
         if (context != null) {
+            // 添加关系引用, 即
+            // builderAssistant.getCurrentNamespace() ---  主动引用的namespace
+            // context.getStringAttribute("namespace") --- 被引用的namespace, 将它们两个关联起来, 保存到Configuration中
             configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
+
+            // 其实下面这段代码的核心就是：MapperBuilderAssistant#useCacheRef(namespace), 但是mybatis选择用一个类将它们包裹起来.
+            // 这是因为被引用的namespace可能还没有被加载到, mybatis将其缓存起来, 到后面再统一处理. 它选择将其放到
+            // org.apache.ibatis.session.Configuration.incompleteCacheRefs中, 所以定义了一个新类来包裹.
             CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant, context.getStringAttribute("namespace"));
             try {
                 cacheRefResolver.resolveCacheRef();
@@ -182,7 +207,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
 
     private void cacheElement(XNode context) {
+        // 如果有设置二级缓存
         if (context != null) {
+            // 依次解析缓存中的配置, 将其初始化, 然后存储到Configuration中.
             String type = context.getStringAttribute("type", "PERPETUAL");
             Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
             String eviction = context.getStringAttribute("eviction", "LRU");
@@ -196,11 +223,15 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 解析mybatis的<parameterMap>标签
+     */
     private void parameterMapElement(List<XNode> list) {
         for (XNode parameterMapNode : list) {
             String id = parameterMapNode.getStringAttribute("id");
             String type = parameterMapNode.getStringAttribute("type");
             Class<?> parameterClass = resolveClass(type);
+            // 获取每个<parameter>标签
             List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
             List<ParameterMapping> parameterMappings = new ArrayList<>();
             for (XNode parameterNode : parameterNodes) {

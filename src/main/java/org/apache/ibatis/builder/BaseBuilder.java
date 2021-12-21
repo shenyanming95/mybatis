@@ -29,7 +29,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * @author Clinton Begin
+ * mybatis需要解析xml文件或者注解配置, 用来生成各个组件, 因此需要各个builder来完成.
+ * 这个builder就是基础抽象父类, 主要保存全局配置类、别名注册器和类型处理器注册器.
+ * <p>
+ * 其实mybatis设计的这些 xxxBuilder, 类似于 tomcat 中的 processor, 都是将处理逻辑封装起来.
+ * 值得造轮子的时候借鉴~
  */
 public abstract class BaseBuilder {
     protected final Configuration configuration;

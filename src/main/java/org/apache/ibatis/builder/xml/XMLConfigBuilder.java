@@ -43,10 +43,8 @@ import java.io.Reader;
 import java.util.Properties;
 
 /**
- * 这个类是用来解析mybatis的配置文件的, 最终解析完后返回一个{@link Configuration}
- *
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 这个类是用来解析mybatis全局配置文件, 即sqlMapConfig.xml.
+ * 最终解析完后返回一个{@link Configuration}
  */
 public class XMLConfigBuilder extends BaseBuilder {
 

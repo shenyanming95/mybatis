@@ -23,18 +23,38 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import java.sql.ResultSet;
 
 /**
- * @author Clinton Begin
+ * 参数映射, 一个变量对应一个{@link ParameterMapping}
  */
 public class ParameterMapping {
-
+    /**
+     * 全局配置类
+     */
     private Configuration configuration;
 
+    /**
+     * java对象的变量名
+     */
     private String property;
+
     private ParameterMode mode;
+
+    /**
+     * javaType类型
+     */
     private Class<?> javaType = Object.class;
+
+    /**
+     * 参数对应的jdbc类型
+     */
     private JdbcType jdbcType;
+
     private Integer numericScale;
+
+    /**
+     * 手动指定类型处理器
+     */
     private TypeHandler<?> typeHandler;
+
     private String resultMapId;
     private String jdbcTypeName;
     private String expression;
