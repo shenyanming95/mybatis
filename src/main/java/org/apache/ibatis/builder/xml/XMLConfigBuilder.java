@@ -78,6 +78,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+        // 在这里将全局配置类Configuration创建好
         super(new Configuration());
         ErrorContext.instance().resource("SQL Mapper Configuration");
         this.configuration.setVariables(props);
@@ -86,11 +87,15 @@ public class XMLConfigBuilder extends BaseBuilder {
         this.parser = parser;
     }
 
+    /**
+     * 开始解析全局配置文件, 将数据保存到{@link Configuration}中, 然后返回
+     */
     public Configuration parse() {
         if (parsed) {
             throw new BuilderException("Each XMLConfigBuilder can only be used once.");
         }
         parsed = true;
+        // 优先解析根目录
         parseConfiguration(parser.evalNode("/configuration"));
         return configuration;
     }
@@ -102,7 +107,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     private void parseConfiguration(XNode root) {
         try {
-            // issue #117 read properties first
+            // issue #117 read properties first (https://github.com/mybatis/mybatis-3/issues/117)
             propertiesElement(root.evalNode("properties"));
             // 解析配置
             Properties settings = settingsAsProperties(root.evalNode("settings"));

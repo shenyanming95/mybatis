@@ -61,7 +61,15 @@ public class MapperAnnotationBuilder {
             .collect(Collectors.toSet());
 
     private final Configuration configuration;
+
+    /**
+     * 用来辅助生成{@link MappedStatement}
+     */
     private final MapperBuilderAssistant assistant;
+
+    /**
+     * mapper接口的类型
+     */
     private final Class<?> type;
 
     public MapperAnnotationBuilder(Configuration configuration, Class<?> type) {
@@ -71,8 +79,12 @@ public class MapperAnnotationBuilder {
         this.type = type;
     }
 
+    /**
+     * 解析mapper接口, 处理里面的每一个方法, 一一生成对应的{@link MappedStatement}
+     */
     public void parse() {
         String resource = type.toString();
+        // 一个mapper接口只会被加载一次
         if (!configuration.isResourceLoaded(resource)) {
             loadXmlResource();
             configuration.addLoadedResource(resource);

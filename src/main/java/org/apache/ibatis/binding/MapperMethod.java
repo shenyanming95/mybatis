@@ -39,6 +39,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
+ * 这个类对应Mapper接口中的每一个方法, 举个例子, CustomerMapper#getCustomer()方法
+ * 它就会拥有一个{@link MapperMethod}.
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
@@ -49,7 +52,15 @@ public class MapperMethod {
     private final SqlCommand command;
     private final MethodSignature method;
 
+    /**
+     * 创建一个MapperMethod
+     *
+     * @param mapperInterface Mapper接口的类型
+     * @param method          接口中的方法
+     * @param config          全局配置类
+     */
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
+        // cj
         this.command = new SqlCommand(config, mapperInterface, method);
         this.method = new MethodSignature(config, mapperInterface, method);
     }
@@ -99,8 +110,7 @@ public class MapperMethod {
                     Object param = method.convertArgsToSqlCommandParam(args);
                     result = sqlSession.selectOne(command.getName(), param);
                     // JDK8的适配, 处理返回类型为：java.util.Optional
-                    if (method.returnsOptional()
-                            && (result == null || !method.getReturnType().equals(result.getClass()))) {
+                    if (method.returnsOptional() && (result == null || !method.getReturnType().equals(result.getClass()))) {
                         result = Optional.ofNullable(result);
                     }
                 }
@@ -115,8 +125,7 @@ public class MapperMethod {
         }
         // 方法定义返回值不为null, 但是执行结果后却为null, 就抛出异常
         if (result == null && method.getReturnType().isPrimitive() && !method.returnsVoid()) {
-            throw new BindingException("Mapper method '" + command.getName()
-                    + " attempted to return null from a method with a primitive return type (" + method.getReturnType() + ").");
+            throw new BindingException("Mapper method '" + command.getName() + " attempted to return null from a method with a primitive return type (" + method.getReturnType() + ").");
         }
         // 到这里, 整个SQL执行流程就完了, 实际上Mapper代理开发, mybatis也是调用SqlSession
         // 去执行SQL的。
@@ -141,11 +150,8 @@ public class MapperMethod {
 
     private void executeWithResultHandler(SqlSession sqlSession, Object[] args) {
         MappedStatement ms = sqlSession.getConfiguration().getMappedStatement(command.getName());
-        if (!StatementType.CALLABLE.equals(ms.getStatementType())
-                && void.class.equals(ms.getResultMaps().get(0).getType())) {
-            throw new BindingException("method " + command.getName()
-                    + " needs either a @ResultMap annotation, a @ResultType annotation,"
-                    + " or a resultType attribute in XML so a ResultHandler can be used as a parameter.");
+        if (!StatementType.CALLABLE.equals(ms.getStatementType()) && void.class.equals(ms.getResultMaps().get(0).getType())) {
+            throw new BindingException("method " + command.getName() + " needs either a @ResultMap annotation, a @ResultType annotation," + " or a resultType attribute in XML so a ResultHandler can be used as a parameter.");
         }
         Object param = method.convertArgsToSqlCommandParam(args);
         if (method.hasRowBounds()) {
@@ -241,17 +247,18 @@ public class MapperMethod {
         private final SqlCommandType type;
 
         public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
+            // 获取接口中方法的名称
             final String methodName = method.getName();
+            // 获取方法所在类的类型, 那不就是 mapperInterface？如果方法是继承自其它Mapper接口, 那这两个值就不一样了
             final Class<?> declaringClass = method.getDeclaringClass();
-            MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
-                    configuration);
+            // 生成MappedStatement
+            MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass, configuration);
             if (ms == null) {
                 if (method.getAnnotation(Flush.class) != null) {
                     name = null;
                     type = SqlCommandType.FLUSH;
                 } else {
-                    throw new BindingException("Invalid bound statement (not found): "
-                            + mapperInterface.getName() + "." + methodName);
+                    throw new BindingException("Invalid bound statement (not found): " + mapperInterface.getName() + "." + methodName);
                 }
             } else {
                 name = ms.getId();
@@ -270,8 +277,8 @@ public class MapperMethod {
             return type;
         }
 
-        private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
-                                                       Class<?> declaringClass, Configuration configuration) {
+
+        private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName, Class<?> declaringClass, Configuration configuration) {
             String statementId = mapperInterface.getName() + "." + methodName;
             if (configuration.hasStatement(statementId)) {
                 return configuration.getMappedStatement(statementId);
@@ -280,8 +287,7 @@ public class MapperMethod {
             }
             for (Class<?> superInterface : mapperInterface.getInterfaces()) {
                 if (declaringClass.isAssignableFrom(superInterface)) {
-                    MappedStatement ms = resolveMappedStatement(superInterface, methodName,
-                            declaringClass, configuration);
+                    MappedStatement ms = resolveMappedStatement(superInterface, methodName, declaringClass, configuration);
                     if (ms != null) {
                         return ms;
                     }
@@ -291,20 +297,32 @@ public class MapperMethod {
         }
     }
 
+    /**
+     * mybatis对java方法的签名, 可以借鉴一下
+     */
     public static class MethodSignature {
-
+        // 方法返回值是否是集合
         private final boolean returnsMany;
+        // 方法返回值是否是Map
         private final boolean returnsMap;
+        // 方法是否无返回值
         private final boolean returnsVoid;
+        // 方法返回值是否是：org.apache.ibatis.cursor.Cursor类型
         private final boolean returnsCursor;
+        // 方法返回值是否是：java.util.Optional类型
         private final boolean returnsOptional;
+        // 方法返回值的类型
         private final Class<?> returnType;
         private final String mapKey;
+        // 方法参数中ResultHandler的位置, 如方法参数不存在ResultHandler, 此值为null
         private final Integer resultHandlerIndex;
+        // 方法参数中RowBounds的位置, 如方法参数不存在RowBounds, 此值为null
         private final Integer rowBoundsIndex;
+        // 存储方法参数的名称, 比方说使用了@Param注解的参数
         private final ParamNameResolver paramNameResolver;
 
         public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {
+            // 对方法返回值的解析, 可能是泛型, 因此mybatis做了一层解析
             Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
             if (resolvedReturnType instanceof Class<?>) {
                 this.returnType = (Class<?>) resolvedReturnType;
@@ -313,10 +331,12 @@ public class MapperMethod {
             } else {
                 this.returnType = method.getReturnType();
             }
+            // 方法返回值类型的判断
             this.returnsVoid = void.class.equals(this.returnType);
             this.returnsMany = configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
             this.returnsCursor = Cursor.class.equals(this.returnType);
             this.returnsOptional = Optional.class.equals(this.returnType);
+            // 获取 org.apache.ibatis.annotations.MapKey 指定的值, 可能为null
             this.mapKey = getMapKey(method);
             this.returnsMap = this.mapKey != null;
             this.rowBoundsIndex = getUniqueParamIndex(method, RowBounds.class);

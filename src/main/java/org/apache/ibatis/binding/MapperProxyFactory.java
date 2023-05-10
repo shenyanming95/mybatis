@@ -24,6 +24,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 这里的工厂可能跟其它框架的设计不太一样.
+ * MyBatis的这个工厂, 是基于每个Mapper而言的, 比方说：用户创建了两个数据操作接口,
+ * CustomerMapper、RoleMapper, 那么它们就对应着两个MapperProxyFactory.
+ * 即每一个类型的Mapper接口, 都有自己的工厂类.
+ *
  * @author Lasse Voss
  */
 public class MapperProxyFactory<T> {

@@ -312,7 +312,8 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T getMapper(Class<T> type) {
-        // this表示当前SqlSession实例, 即DefaultSqlSession
+        // this表示当前SqlSession实例, 即DefaultSqlSession.
+        // 它会从全局配置中心拿到Mapper代理实现
         return configuration.getMapper(type, this);
     }
 

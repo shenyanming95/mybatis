@@ -29,7 +29,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * MyBatis每个<select>、<update>...标签对应一个{@link MappedStatement}对象
+ * MyBatis每个<select>、<update>...标签对应一个{@link MappedStatement}对象.
+ * 也即Mapper接口的每个方法都是一个{@link MappedStatement}.
  *
  * @author Clinton Begin
  */

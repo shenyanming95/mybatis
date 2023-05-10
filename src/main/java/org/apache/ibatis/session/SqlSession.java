@@ -91,6 +91,12 @@ public interface SqlSession extends Closeable {
 
     Configuration getConfiguration();
 
+    /**
+     * 获取一个Mapper代理, 这里的Mapper就是我们在写SQL语句的接口
+     *
+     * @param type 接口类型
+     * @return 接口实现代理, 就是有它, mybatis才可以只写接口不写实现
+     */
     <T> T getMapper(Class<T> type);
 
     Connection getConnection();
