@@ -23,7 +23,8 @@ import org.apache.ibatis.type.SimpleTypeRegistry;
 import java.util.regex.Pattern;
 
 /**
- * @author Clinton Begin
+ * 维护用户编写的SQL表达式, 即：写在 xxMapper.xml 中的SQL语句,
+ * 还没有经过mybatis改写的.
  */
 public class TextSqlNode implements SqlNode {
     private final String text;
@@ -39,7 +40,9 @@ public class TextSqlNode implements SqlNode {
     }
 
     public boolean isDynamic() {
+        // 这个Parser不做任何事, 就是单纯地只要能被调用, 那就是动态的
         DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
+        // 这里的逻辑就是, 只要用户编写的sql带有"${}", 那就说明这个sql就是属于动态的
         GenericTokenParser parser = createParser(checker);
         parser.parse(text);
         return checker.isDynamic();

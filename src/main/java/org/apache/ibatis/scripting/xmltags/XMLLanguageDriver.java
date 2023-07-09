@@ -30,7 +30,7 @@ import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * 默认的sql语句解析器, 专门用来解析写 xxxMapper.xml 或者 各个注解({@link Select}) 的sql.
+ * 默认的sql语句解析器, 专门用来解析写 xxxMapper.xml 或者 各个注解(如：{@link Select}) 的sql.
  */
 public class XMLLanguageDriver implements LanguageDriver {
 

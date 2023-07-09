@@ -38,7 +38,15 @@ public final class MappedStatement {
 
     private String resource;
     private Configuration configuration;
+
+    /**
+     * mybatis有一个全局配置类{@link Configuration#mappedStatements}用于维护所有的sql标签,
+     * 本质就是一个map, 而这个map的key就是这个id, 它的组装：
+     * 1.mapper文件的namespace;
+     * 2.各个<select>、<update>...标签的id属性;
+     */
     private String id;
+
     private Integer fetchSize;
     private Integer timeout;
     private StatementType statementType;
@@ -316,8 +324,7 @@ public final class MappedStatement {
         /**
          * Resul sets.
          *
-         * @param resultSet
-         *          the result set
+         * @param resultSet the result set
          * @return the builder
          * @deprecated Use {@link #resultSets}
          */

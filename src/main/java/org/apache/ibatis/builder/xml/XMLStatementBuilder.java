@@ -31,7 +31,8 @@ import java.util.Locale;
 
 /**
  * {@link MappedStatement}构造器, 用来解析mapper文件中的sql标签, 即：
- * <select>标签, 或者<insert>标签, 或者<update>标签, 或者<delete>标签
+ * <select>标签, 或者<insert>标签, 或者<update>标签, 或者<delete>标签.
+ * 一个标签用一个{@link XMLStatementBuilder}来解析.
  */
 public class XMLStatementBuilder extends BaseBuilder {
 

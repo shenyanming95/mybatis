@@ -96,14 +96,23 @@ public class XMLScriptBuilder extends BaseBuilder {
         return sqlSource;
     }
 
+    /**
+     * 将标签中的sql取出来
+     * @param node xml标签节点
+     */
     protected MixedSqlNode parseDynamicTags(XNode node) {
         List<SqlNode> contents = new ArrayList<>();
         NodeList children = node.getNode().getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
+            // 处理标签节点
             XNode child = node.newXNode(children.item(i));
+            // 一般是进入下面这个分支
             if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
+                // data就是最开始的sql语句, 没有经过mybatis处理
                 String data = child.getStringBody("");
+                // 将最开始(没有经过修改)的sql语句存储起来
                 TextSqlNode textSqlNode = new TextSqlNode(data);
+                // 判断是否是动态的, 依据是：sql语句是否有用"${}"符号
                 if (textSqlNode.isDynamic()) {
                     contents.add(textSqlNode);
                     isDynamic = true;
